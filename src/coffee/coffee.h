@@ -50,6 +50,7 @@ typedef struct CoffeeAOTag {
     uint8_t current_brew_strength;
     uint8_t is_coffee_pot_in_machine;
     uint8_t is_automatic_brew_active;
+    uint8_t i;
 } CoffeeAO;
 
 /* protected: */

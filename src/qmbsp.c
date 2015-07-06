@@ -19,6 +19,7 @@ void BSP_Init( ) {
 	AD_Wheel_Init();
 	Button_Init();
 	LED_Init();
+	RtcInit();
 	//COM
   uart_init_0 ( );
   lcd_init();
@@ -26,53 +27,6 @@ void BSP_Init( ) {
   set_cursor (0, 0);
 }
 
-
-/*..........................................................................*/
-void BSP_display(uint8_t timeout) {
-    printf("[%3d] ", (int)timeout);
-    fflush(stdout);
-}
-
-
-/*..........................................................................*/
-void BSP_display_str(char *msg) {
-     printf("%s", msg);
-
-  
-}
-/*..........................................................................*/
-void BSP_exit(void) {
-    printf("Bye, Bye!");
-    _sys_exit(0);
-}
-
-void BSP_delay ( int val ){
-
-int i;
-	for(i=0;i<val; i++);
-
-}
-#define BOMB
-
-#ifdef BOMB
-void BSP_boom(void) {
-
-	printf("boom!!!!\n");
-	_sys_exit(0);
-}
-#endif
-
-void  BSP_LCD_display_str( char * str, int line, int pos){
-
-  set_cursor (line,pos);
-  lcd_print ( (unsigned char const*) str);
-
-
-};
-
-
-
-#ifdef BSP_KEYBOARD
 
 
 int _kbhit(void ) {
@@ -90,11 +44,6 @@ int _getch()
  return	 ( fgetc(  f) );
 }
 	
-
-#endif 
-
-
-
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
 void Q_onAssert(char const * const file, int line) {

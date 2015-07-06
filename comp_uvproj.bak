@@ -443,9 +443,14 @@
               <FilePath>.\bsp\Serial.c</FilePath>
             </File>
             <File>
+              <FileName>adwheel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\adwheel.c</FilePath>
+            </File>
+            <File>
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\timer.c</FilePath>
+              <FilePath>.\bsp\timer.c</FilePath>
             </File>
           </Files>
         </Group>

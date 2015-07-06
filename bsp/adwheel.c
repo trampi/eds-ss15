@@ -12,7 +12,7 @@ __irq void ADC_IRQHandler(void) {
 	ad_evt.val = (AD0DR0 >> 6) & 0x3FF;      /* Read Conversion Result             */
 	if(&l_CoffeeAO != 0) {
 		QF_INT_ENABLE();
-		QActive_postFIFO((QActive *)&l_CoffeeAO, (QEvent *)&ad_evt);
+		QActive_postFIFO((QActive *)&l_CoffeeAO, (QEvt *)&ad_evt);
 		QF_INT_DISABLE();
 	}
   VICVectAddr = 0;                      /* Acknowledge Interrupt              */

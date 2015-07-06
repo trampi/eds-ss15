@@ -40,8 +40,8 @@ static struct Entry menu_entries[] = {
 
 
 /* @(/2/0) .................................................................*/
-/* @(/2/0/8) ...............................................................*/
-/* @(/2/0/8/0) */
+/* @(/2/0/9) ...............................................................*/
+/* @(/2/0/9/0) */
 QState CoffeeAO_initial(CoffeeAO * const me, QEvt const * const e) {
     (void)e;               /* avoid compiler warning about unused parameter */
     me->current_time = 0;
@@ -50,26 +50,23 @@ QState CoffeeAO_initial(CoffeeAO * const me, QEvt const * const e) {
     me->current_menu_index = 0;
     return Q_TRAN(&CoffeeAO_menu);
 }
-/* @(/2/0/8/1) .............................................................*/
+/* @(/2/0/9/1) .............................................................*/
 QState CoffeeAO_coffeemachine(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/0) */
+        /* @(/2/0/9/1/0) */
         case BREW_SIG: {
             printf("testing for coffee pot\n");
-            /* @(/2/0/8/1/0/0) */
+            /* @(/2/0/9/1/0/0) */
             if (l_CoffeeAO.is_coffee_pot_in_machine != 0) {
-                printf("test for coffee pot ok, starting to brew");
+                printf("test for coffee pot ok, starting to brew\n");
                 status_ = Q_HANDLED();
             }
+            /* @(/2/0/9/1/0/1) */
             else {
-                status_ = Q_UNHANDLED();
+                printf("Insert pot before brewing\n");
+                status_ = Q_HANDLED();
             }
-            break;
-        }
-        /* @(/2/0/8/1/1) */
-        case TIME_SIG: {
-            status_ = Q_HANDLED();
             break;
         }
         default: {
@@ -79,22 +76,13 @@ QState CoffeeAO_coffeemachine(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/2) ...........................................................*/
+/* @(/2/0/9/1/1) ...........................................................*/
 QState CoffeeAO_menu(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/2/0) */
+        /* @(/2/0/9/1/1/0) */
         case ADWHEEL_SIG: {
             // calculate current menu entry
-            /*
-            unsigned const char* current_menu_entry = "current menu entry";
-            char time[20];
-            lcd_clear();
-            set_cursor(0, 0);
-            lcd_print(current_menu_entry);
-            set_cursor(0, 1);
-            sprintf(time, "%i", ((AdEvt*)e)->val);
-            lcd_print(time);*/
             char menu_text[20];
             struct Entry* menu_entry = &menu_entries[me->current_menu_index];
             me->current_menu_index = ((AdEvt*)e)->val * me->max_menu_index / 1024;
@@ -115,10 +103,14 @@ QState CoffeeAO_menu(CoffeeAO * const me, QEvt const * const e) {
                 break;
             }
             lcd_print(menu_text);
+
+            set_cursor(4, 1);
+            sprintf(menu_text, "%02u:%02u:%02u", l_CoffeeAO.alarm.real_current_time.hours, l_CoffeeAO.alarm.real_current_time.minutes, l_CoffeeAO.alarm.real_current_time.seconds);
+            lcd_print(menu_text);
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/2/1) */
+        /* @(/2/0/9/1/1/1) */
         case INT_SIG: {
             QEvent *menuEvt = Q_NEW(QEvent, menu_entries[me->current_menu_index].signal);
             //QEvent *menuEvt = Q_NEW(QEvent, GO_COFFEE_POT_TOGGLE_SIG);
@@ -129,32 +121,32 @@ QState CoffeeAO_menu(CoffeeAO * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/2/2) */
+        /* @(/2/0/9/1/1/2) */
         case GO_COFFEE_POT_TOGGLE_SIG: {
             status_ = Q_TRAN(&CoffeeAO_coffeePotToggle);
             break;
         }
-        /* @(/2/0/8/1/2/3) */
+        /* @(/2/0/9/1/1/3) */
         case GO_TIME_BREW_TOGGLE_SIG: {
             status_ = Q_TRAN(&CoffeeAO_timeBrewActivatedToggle);
             break;
         }
-        /* @(/2/0/8/1/2/4) */
+        /* @(/2/0/9/1/1/4) */
         case GO_SET_BREW_TIME_CLOCK_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_brew_h1);
             break;
         }
-        /* @(/2/0/8/1/2/5) */
+        /* @(/2/0/9/1/1/5) */
         case GO_SET_TIME_OF_DAY_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_clock_h1);
             break;
         }
-        /* @(/2/0/8/1/2/6) */
+        /* @(/2/0/9/1/1/6) */
         case GO_START_BREWING_SIG: {
             status_ = Q_TRAN(&CoffeeAO_startBrewingNow);
             break;
         }
-        /* @(/2/0/8/1/2/7) */
+        /* @(/2/0/9/1/1/7) */
         case GO_SET_BREW_STRENGTH_SIG: {
             status_ = Q_TRAN(&CoffeeAO_setBrewStrength);
             break;
@@ -166,11 +158,11 @@ QState CoffeeAO_menu(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3) ...........................................................*/
+/* @(/2/0/9/1/2) ...........................................................*/
 QState CoffeeAO_submenu(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/0) */
+        /* @(/2/0/9/1/2/0) */
         case GO_BACK_SIG: {
             status_ = Q_TRAN(&CoffeeAO_menu);
             break;
@@ -182,11 +174,11 @@ QState CoffeeAO_submenu(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/1) .........................................................*/
+/* @(/2/0/9/1/2/1) .........................................................*/
 QState CoffeeAO_setBrewStrength(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/1) */
+        /* @(/2/0/9/1/2/1) */
         case Q_ENTRY_SIG: {
             lcd_clear();
             set_cursor(0, 0);
@@ -197,13 +189,13 @@ QState CoffeeAO_setBrewStrength(CoffeeAO * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/1) */
+        /* @(/2/0/9/1/2/1) */
         case Q_EXIT_SIG: {
             printf("saved brew strength: %u\n", l_CoffeeAO.current_brew_strength);
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/1/0) */
+        /* @(/2/0/9/1/2/1/0) */
         case ADWHEEL_SIG: {
             const int led_count = 8;
             int i = 0;
@@ -219,7 +211,7 @@ QState CoffeeAO_setBrewStrength(CoffeeAO * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/1/1) */
+        /* @(/2/0/9/1/2/1/1) */
         case INT_SIG: {
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
             status_ = Q_HANDLED();
@@ -232,20 +224,18 @@ QState CoffeeAO_setBrewStrength(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/2) .........................................................*/
+/* @(/2/0/9/1/2/2) .........................................................*/
 QState CoffeeAO_startBrewingNow(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/2) */
+        /* @(/2/0/9/1/2/2) */
         case Q_ENTRY_SIG: {
+            QF_INT_ENABLE();
+            printf("Starting to brew\n %i", l_CoffeeAO.i++);
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, BREW_SIG));
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
-            status_ = Q_HANDLED();
-            break;
-        }
-        /* @(/2/0/8/1/3/2) */
-        case Q_EXIT_SIG: {
-            printf("Starting to brew\n");
+            QF_INT_DISABLE();
+
             status_ = Q_HANDLED();
             break;
         }
@@ -256,18 +246,19 @@ QState CoffeeAO_startBrewingNow(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/3) .........................................................*/
+/* @(/2/0/9/1/2/3) .........................................................*/
 QState CoffeeAO_timeBrewActivatedToggle(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/3) */
+        /* @(/2/0/9/1/2/3) */
         case Q_ENTRY_SIG: {
             l_CoffeeAO.is_automatic_brew_active = l_CoffeeAO.is_automatic_brew_active == 0 ? 1 : 0;
+            Alarm_dispatch((QFsm *)&l_CoffeeAO.alarm, Q_NEW(QEvent, ALARM_TOGGLE_SIG));
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/3) */
+        /* @(/2/0/9/1/2/3) */
         case Q_EXIT_SIG: {
             printf("toggled automatic brew to: %u\n", l_CoffeeAO.is_automatic_brew_active);
             status_ = Q_HANDLED();
@@ -280,24 +271,32 @@ QState CoffeeAO_timeBrewActivatedToggle(CoffeeAO * const me, QEvt const * const 
     }
     return status_;
 }
-/* @(/2/0/8/1/3/4) .........................................................*/
+/* @(/2/0/9/1/2/4) .........................................................*/
 QState CoffeeAO_set_brew_h1(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/4) */
+        /* @(/2/0/9/1/2/4) */
         case Q_ENTRY_SIG: {
             lcd_clear();
-            set_cursor(0, 0);
-            lcd_print("!set brew time clock!");
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/4/0) */
+        /* @(/2/0/9/1/2/4/0) */
         case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 3 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.alarm_time;
+            ham->hours = MIN(10*value + ham->hours % 10, 23);
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(0, 1);
+            lcd_print("^");
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/4/1) */
+        /* @(/2/0/9/1/2/4/1) */
         case INT_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_brew_h2);
             break;
@@ -309,17 +308,17 @@ QState CoffeeAO_set_brew_h1(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/5) .........................................................*/
+/* @(/2/0/9/1/2/5) .........................................................*/
 QState CoffeeAO_set_clock_h1(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/5) */
+        /* @(/2/0/9/1/2/5) */
         case Q_ENTRY_SIG: {
             lcd_clear();
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/5/0) */
+        /* @(/2/0/9/1/2/5/0) */
         case ADWHEEL_SIG: {
             char clock_message[20];
             int value = ((AdEvt*)e)->val * 3 / 1024;
@@ -334,7 +333,7 @@ QState CoffeeAO_set_clock_h1(CoffeeAO * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/5/1) */
+        /* @(/2/0/9/1/2/5/1) */
         case INT_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_clock_h2);
             break;
@@ -346,22 +345,22 @@ QState CoffeeAO_set_clock_h1(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/6) .........................................................*/
+/* @(/2/0/9/1/2/6) .........................................................*/
 QState CoffeeAO_set_clock_h2(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/6) */
+        /* @(/2/0/9/1/2/6) */
         case Q_ENTRY_SIG: {
             lcd_clear();
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/6/0) */
+        /* @(/2/0/9/1/2/6/0) */
         case INT_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_clock_m1);
             break;
         }
-        /* @(/2/0/8/1/3/6/1) */
+        /* @(/2/0/9/1/2/6/1) */
         case ADWHEEL_SIG: {
             char clock_message[20];
             int value = ((AdEvt*)e)->val * 10 / 1024;
@@ -383,17 +382,33 @@ QState CoffeeAO_set_clock_h2(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/7) .........................................................*/
+/* @(/2/0/9/1/2/7) .........................................................*/
 QState CoffeeAO_set_clock_m1(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/7/0) */
+        /* @(/2/0/9/1/2/7) */
+        case Q_ENTRY_SIG: {
+            lcd_clear();
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/7/0) */
         case INT_SIG: {
             status_ = Q_TRAN(&CoffeeAO_set_clock_m2);
             break;
         }
-        /* @(/2/0/8/1/3/7/1) */
+        /* @(/2/0/9/1/2/7/1) */
         case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 6 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.current_time;
+            ham->minutes = 10*value + ham->minutes % 10;
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(3, 1);
+            lcd_print("^");
             status_ = Q_HANDLED();
             break;
         }
@@ -404,16 +419,150 @@ QState CoffeeAO_set_clock_m1(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/8) .........................................................*/
+/* @(/2/0/9/1/2/8) .........................................................*/
 QState CoffeeAO_set_clock_m2(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/8/0) */
-        case ADWHEEL_SIG: {
+        /* @(/2/0/9/1/2/8) */
+        case Q_ENTRY_SIG: {
+            lcd_clear();
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/8/1) */
+        /* @(/2/0/9/1/2/8/0) */
+        case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 10 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.current_time;
+            ham->minutes = (ham->minutes / 10) * 10 + value;
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(4, 1);
+            lcd_print("^");
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/8/1) */
+        case INT_SIG: {
+            RtcEvt* rtc_evt = Q_NEW(RtcEvt, TIME_SET_SIG);
+            rtc_evt->rtc.hours = l_CoffeeAO.alarm.current_time.hours;
+            rtc_evt->rtc.minutes = l_CoffeeAO.alarm.current_time.minutes;
+
+            Alarm_dispatch((QFsm *)&l_CoffeeAO.alarm, (QEvt *) rtc_evt);
+            QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+
+            status_ = Q_HANDLED();
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&CoffeeAO_submenu);
+            break;
+        }
+    }
+    return status_;
+}
+/* @(/2/0/9/1/2/9) .........................................................*/
+QState CoffeeAO_set_brew_h2(CoffeeAO * const me, QEvt const * const e) {
+    QState status_;
+    switch (e->sig) {
+        /* @(/2/0/9/1/2/9) */
+        case Q_ENTRY_SIG: {
+            lcd_clear();
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/9/0) */
+        case INT_SIG: {
+            status_ = Q_TRAN(&CoffeeAO_set_brew_m1);
+            break;
+        }
+        /* @(/2/0/9/1/2/9/1) */
+        case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 10 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.alarm_time;
+            ham->hours = MIN((ham->hours / 10) * 10 + value, 23);
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(1, 1);
+            lcd_print("^");
+            status_ = Q_HANDLED();
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&CoffeeAO_submenu);
+            break;
+        }
+    }
+    return status_;
+}
+/* @(/2/0/9/1/2/10) ........................................................*/
+QState CoffeeAO_set_brew_m1(CoffeeAO * const me, QEvt const * const e) {
+    QState status_;
+    switch (e->sig) {
+        /* @(/2/0/9/1/2/10) */
+        case Q_ENTRY_SIG: {
+            lcd_clear();
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/10/0) */
+        case INT_SIG: {
+            status_ = Q_TRAN(&CoffeeAO_set_brew_m2);
+            break;
+        }
+        /* @(/2/0/9/1/2/10/1) */
+        case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 6 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.alarm_time;
+            ham->minutes = 10*value + ham->minutes % 10;
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(3, 1);
+            lcd_print("^");
+            status_ = Q_HANDLED();
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&CoffeeAO_submenu);
+            break;
+        }
+    }
+    return status_;
+}
+/* @(/2/0/9/1/2/11) ........................................................*/
+QState CoffeeAO_set_brew_m2(CoffeeAO * const me, QEvt const * const e) {
+    QState status_;
+    switch (e->sig) {
+        /* @(/2/0/9/1/2/11) */
+        case Q_ENTRY_SIG: {
+            lcd_clear();
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/11/0) */
+        case ADWHEEL_SIG: {
+            char clock_message[20];
+            int value = ((AdEvt*)e)->val * 10 / 1024;
+            HourAndMinute* ham = &l_CoffeeAO.alarm.alarm_time;
+            ham->minutes = MIN((ham->minutes / 10) * 10 + value, 59);
+            sprintf(clock_message, "%02u:%02u", ham->hours, ham->minutes);
+
+            set_cursor(0, 0);
+            lcd_print(clock_message);
+            set_cursor(4, 1);
+            lcd_print("^");
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* @(/2/0/9/1/2/11/1) */
         case INT_SIG: {
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
             status_ = Q_HANDLED();
@@ -426,81 +575,18 @@ QState CoffeeAO_set_clock_m2(CoffeeAO * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/0/8/1/3/9) .........................................................*/
-QState CoffeeAO_set_brew_h2(CoffeeAO * const me, QEvt const * const e) {
-    QState status_;
-    switch (e->sig) {
-        /* @(/2/0/8/1/3/9/0) */
-        case INT_SIG: {
-            status_ = Q_TRAN(&CoffeeAO_set_brew_m1);
-            break;
-        }
-        /* @(/2/0/8/1/3/9/1) */
-        case ADWHEEL_SIG: {
-            status_ = Q_HANDLED();
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&CoffeeAO_submenu);
-            break;
-        }
-    }
-    return status_;
-}
-/* @(/2/0/8/1/3/10) ........................................................*/
-QState CoffeeAO_set_brew_m1(CoffeeAO * const me, QEvt const * const e) {
-    QState status_;
-    switch (e->sig) {
-        /* @(/2/0/8/1/3/10/0) */
-        case INT_SIG: {
-            status_ = Q_TRAN(&CoffeeAO_set_brew_m2);
-            break;
-        }
-        /* @(/2/0/8/1/3/10/1) */
-        case ADWHEEL_SIG: {
-            status_ = Q_HANDLED();
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&CoffeeAO_submenu);
-            break;
-        }
-    }
-    return status_;
-}
-/* @(/2/0/8/1/3/11) ........................................................*/
-QState CoffeeAO_set_brew_m2(CoffeeAO * const me, QEvt const * const e) {
-    QState status_;
-    switch (e->sig) {
-        /* @(/2/0/8/1/3/11/0) */
-        case ADWHEEL_SIG: {
-            status_ = Q_HANDLED();
-            break;
-        }
-        /* @(/2/0/8/1/3/11/1) */
-        case INT_SIG: {
-            status_ = Q_HANDLED();
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&CoffeeAO_submenu);
-            break;
-        }
-    }
-    return status_;
-}
-/* @(/2/0/8/1/3/12) ........................................................*/
+/* @(/2/0/9/1/2/12) ........................................................*/
 QState CoffeeAO_coffeePotToggle(CoffeeAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/0/8/1/3/12) */
+        /* @(/2/0/9/1/2/12) */
         case Q_ENTRY_SIG: {
             l_CoffeeAO.is_coffee_pot_in_machine = l_CoffeeAO.is_coffee_pot_in_machine == 0 ? 1 : 0;
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/0/8/1/3/12) */
+        /* @(/2/0/9/1/2/12) */
         case Q_EXIT_SIG: {
             printf("toggled coffee pot in machine to: %u\n", l_CoffeeAO.is_coffee_pot_in_machine);
             status_ = Q_HANDLED();

@@ -15,11 +15,12 @@
 * for more details.
 *****************************************************************************/
 /* @(/3/3) .................................................................*/
-#ifndef _ALARM_H
-#define _ALARM_H
+#ifndef _CLOCK_H
+#define _CLOCK_H
 
 #include "qp_port.h"
 #include <stdio.h>
+#include "rtc.h"
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -27,13 +28,11 @@
 enum AlarmClockSignals {
     TICK_SIG = Q_USER_SIG,                               /* time tick event */
     ALARM_SET_SIG,                                         /* set the alarm */
-    ALARM_ON_SIG,                                      /* turn the alarm on */
-    ALARM_OFF_SIG,                                    /* turn the alarm off */
     ALARM_SIG,  /* alarm event from Alarm component to AlarmClock container */
-    CLOCK_12H_SIG,                             /* set the clock in 12H mode */
-    CLOCK_24H_SIG,                             /* set the clock in 24H mode */
+    ALARM_TOGGLE_SIG,
+
     TIME_SIG,           /* time event sent to Alarm (contains current time) */
-    TERMINATE_SIG,                              /* terminate the application */
+    TIME_SET_SIG,
     GO_COFFEE_POT_TOGGLE_SIG,
     GO_TIME_BREW_TOGGLE_SIG,
     GO_SET_BREW_TIME_CLOCK_SIG,
@@ -62,16 +61,16 @@ typedef struct SetEvtTag {
     uint8_t digit;
 } SetEvt;
 
-/* @(/1/2) .................................................................*/
-typedef struct TimeEvtTag {
+/* @(/1/0) .................................................................*/
+typedef struct RtcEvtTag {
 /* protected: */
     QEvt super;
 
 /* public: */
-    uint8_t current_time;
-} TimeEvt;
+    RTC_T rtc;
+} RtcEvt;
 
-/* @(/1/3) .................................................................*/
+/* @(/1/2) .................................................................*/
 typedef struct AdEvtTag {
 /* protected: */
     QEvt super;
@@ -83,22 +82,24 @@ typedef struct AdEvtTag {
 /* @(/2/1) .................................................................*/
 typedef struct AlarmTag {
 /* protected: */
-    QFsm super;
+    QHsm super;
 
 /* public: */
-    HourAndMinute alarm_time_struct;
+    HourAndMinute alarm_time;
     HourAndMinute current_time;
-    uint16_t alarm_time;
+    RTC_T real_current_time;
 } Alarm;
 
 /* protected: */
 QState Alarm_initial(Alarm * const me, QEvt const * const e);
-QState Alarm_off(Alarm * const me, QEvt const * const e);
-QState Alarm_on(Alarm * const me, QEvt const * const e);
+QState Alarm_normal(Alarm * const me, QEvt const * const e);
+QState Alarm_alarm_off(Alarm * const me, QEvt const * const e);
+QState Alarm_alarm_on(Alarm * const me, QEvt const * const e);
 
-/* @(/2/3) .................................................................*/
-void Alarm_ctor(Alarm * me);
-
+/*
+$declare(StateMachines::Alarm)
+$declare(StateMachines::Alarm_ctor)
+*/
 
 #define Alarm_init(me_)           QFsm_init    ((QFsm *)(me_), (QEvent *)0)
 #define Alarm_dispatch(me_, e_)   QFsm_dispatch((QFsm *)(me_), e_)

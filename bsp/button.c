@@ -30,8 +30,8 @@ __irq void GPIO_IRQHandler(void)
 	int rising;
 	int i;
 
-	
-	for(i = 0; i < 1000; i++);
+
+	for(i = 0; i < 100000; i++); // delay to circumvent hardware problems with triggering too often
 
 	rising = FIO2PIN & (1 << 10);        /* Value of P2.10 */
 
@@ -49,7 +49,7 @@ void button_up()
 {
 	if(&l_CoffeeAO != 0) {
 		QF_INT_ENABLE();
-		QActive_postFIFO((QActive *)&l_CoffeeAO, (QEvent *)&event);
+		QActive_postFIFO((QActive *)&l_CoffeeAO, (QEvt *)&event);
 		QF_INT_DISABLE();
 	}
 }
