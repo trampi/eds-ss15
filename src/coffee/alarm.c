@@ -36,19 +36,13 @@ QState Alarm_normal(Alarm * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
         /* @(/2/1/3/1/0) */
-        case ALARM_SET_SIG: {
-            Write_RTC( &((RtcEvt*)e)->rtc );
-            status_ = Q_HANDLED();
-            break;
-        }
-        /* @(/2/1/3/1/1) */
         case TIME_SET_SIG: {
             printf("setting time\n");
             Write_RTC( &((RtcEvt*)e)->rtc );
             status_ = Q_HANDLED();
             break;
         }
-        /* @(/2/1/3/1/2) */
+        /* @(/2/1/3/1/1) */
         case TIME_SIG: {
             printf("%02u:%02u:%02u\n", ((RtcEvt*)e)->rtc.hours, ((RtcEvt*)e)->rtc.minutes, ((RtcEvt*)e)->rtc.seconds);
             l_CoffeeAO.alarm.real_current_time = ((RtcEvt*)e)->rtc;
@@ -62,12 +56,13 @@ QState Alarm_normal(Alarm * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/1/3/1/3) ...........................................................*/
+/* @(/2/1/3/1/2) ...........................................................*/
 QState Alarm_alarm_off(Alarm * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/1/3/1/3/0) */
+        /* @(/2/1/3/1/2/0) */
         case ALARM_TOGGLE_SIG: {
+            //printf("Alarm SM toggled to on.\n");
             status_ = Q_TRAN(&Alarm_alarm_on);
             break;
         }
@@ -78,19 +73,20 @@ QState Alarm_alarm_off(Alarm * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/1/3/1/4) ...........................................................*/
+/* @(/2/1/3/1/3) ...........................................................*/
 QState Alarm_alarm_on(Alarm * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/1/3/1/4/0) */
+        /* @(/2/1/3/1/3/0) */
         case ALARM_TOGGLE_SIG: {
+            //printf("Alarm SM toggled to off.\n");
             status_ = Q_TRAN(&Alarm_alarm_off);
             break;
         }
-        /* @(/2/1/3/1/4/1) */
+        /* @(/2/1/3/1/3/1) */
         case TIME_SIG: {
             //printf("%02u:%02u:%02u", ((RtcEvt*)e)->rtc.hours, ((RtcEvt*)e)->rtc.minutes, ((RtcEvt*)e)->rtc.seconds);
-            /* @(/2/1/3/1/4/1/0) */
+            /* @(/2/1/3/1/3/1/0) */
             if (((RtcEvt *)e)->rtc.hours == me->alarm_time.hours
 && ((RtcEvt *)e)->rtc.minutes == me->alarm_time.minutes
 && ((RtcEvt *)e)->rtc.seconds == 0

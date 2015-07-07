@@ -8,13 +8,12 @@
   <item name="grid">3</item>
  </group>
  <group name="windows">
-  <item id="StateMachines::Clock::SM">596,218,640,480</item>
-  <item id="StateMachines::CoffeeAO::SM">0,0,1589,698</item>
-  <item id="StateMachines::Alarm::SM">0,0,1069,510</item>
-  <item id="src\coffee::coffee.h">993,0,596,300</item>
-  <item id="src\coffee::coffee.c">0,418,596,300</item>
-  <item id="src\coffee::clock.c">993,418,596,300</item>
-  <item id="src\coffee::clock.h">0,0,1589,718,*</item>
+  <item id="StateMachines::Alarm::SM">0,0,1589,428,*</item>
+  <item id="StateMachines::CoffeeAO::SM">0,0,1589,428</item>
+  <item id="src\coffee::coffee.h">640,152,596,300</item>
+  <item id="src\coffee::coffee.c">993,0,596,300</item>
+  <item id="src\coffee::alarm.c">993,152,596,300</item>
+  <item id="src\coffee::alarm.h">0,0,1589,718</item>
  </group>
  <group name="search">
   <item name="options">4129280</item>

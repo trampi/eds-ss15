@@ -339,7 +339,7 @@
               <OCR_RVCT10>
                 <Type>0</Type>
                 <StartAddress>0x7fe00000</StartAddress>
-                <Size>0x4000</Size>
+                <Size>0x1f</Size>
               </OCR_RVCT10>
             </OnChipMemories>
             <RvctStartVector></RvctStartVector>
@@ -451,6 +451,11 @@
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\bsp\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\button.c</FilePath>
             </File>
           </Files>
         </Group>

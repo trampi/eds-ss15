@@ -27,7 +27,6 @@
 
 enum AlarmClockSignals {
     TICK_SIG = Q_USER_SIG,                               /* time tick event */
-    ALARM_SET_SIG,                                         /* set the alarm */
     ALARM_SIG,  /* alarm event from Alarm component to AlarmClock container */
     ALARM_TOGGLE_SIG,
 

@@ -41,7 +41,7 @@ void Timer1_Init(void )  {
 	
 	
   /* Enable and setup timer interrupt, start timer                            */
-  T1MR0         = 11999 * 200;                       /* 1msec = 12000-1 at 12.0 MHz */
+  T1MR0         = 11999 * 200;                 /* 1msec = 12000-1 at 12.0 MHz */
   T1MCR         = 3;                           /* Interrupt and Reset on MR0  */
   T1TCR         = 1;                           /* Timer0 Enable               */
   VICVectAddr5  = (unsigned long)T1_IRQHandler;/* Set Interrupt Vector        */

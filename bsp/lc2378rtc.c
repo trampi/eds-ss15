@@ -67,6 +67,11 @@ void RtcInit(){
 	RTC_CIIR = 0x01; /* Enable only second count interrupt. minute */
 	event.super.sig = TIME_SIG;
 	event.super.poolId_ = 0;
+	
+	// init cock
+	RTC_SEC = 0;
+	RTC_MIN = 0;
+	RTC_HOUR = 0;
 
 	VICVectAddr13 = (unsigned int)isr_rtc_event; /* Set Interrupt Vector */
 	VICVectCntl13 = 13; /* use it for RTC Interrupt */

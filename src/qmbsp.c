@@ -14,6 +14,8 @@
 /*BSP Init for the MC2300 */
 
 void BSP_Init( ) {
+	
+	// initialize drivers
 	Timer0_Init();
 	Timer1_Init();
 	AD_Wheel_Init();
