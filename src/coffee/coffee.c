@@ -213,7 +213,9 @@ QState CoffeeAO_setBrewStrength(CoffeeAO * const me, QEvt const * const e) {
         }
         /* @(/2/0/9/1/2/1/1) */
         case INT_SIG: {
+            QF_INT_ENABLE();
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+            QF_INT_DISABLE();
             status_ = Q_HANDLED();
             break;
         }
@@ -451,7 +453,9 @@ QState CoffeeAO_set_clock_m2(CoffeeAO * const me, QEvt const * const e) {
             rtc_evt->rtc.minutes = l_CoffeeAO.alarm.current_time.minutes;
 
             Alarm_dispatch((QFsm *)&l_CoffeeAO.alarm, (QEvt *) rtc_evt);
+            QF_INT_ENABLE();
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+            QF_INT_DISABLE();
 
             status_ = Q_HANDLED();
             break;
@@ -564,7 +568,9 @@ QState CoffeeAO_set_brew_m2(CoffeeAO * const me, QEvt const * const e) {
         }
         /* @(/2/0/9/1/2/11/1) */
         case INT_SIG: {
+            QF_INT_ENABLE();
             QActive_postFIFO((QActive *)&l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+            QF_INT_DISABLE();
             status_ = Q_HANDLED();
             break;
         }

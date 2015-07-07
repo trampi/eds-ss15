@@ -162,7 +162,9 @@ for(i = 0; i &lt; led_count; i++) {
         </tran_glyph>
        </tran>
        <tran trig="INT">
-        <action>QActive_postFIFO((QActive *)&amp;l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));</action>
+        <action>QF_INT_ENABLE();
+QActive_postFIFO((QActive *)&amp;l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+QF_INT_DISABLE();</action>
         <tran_glyph conn="147,77,1,-1,-9">
          <action box="-7,-2,6,2"/>
         </tran_glyph>
@@ -320,7 +322,9 @@ rtc_evt-&gt;rtc.hours = l_CoffeeAO.alarm.current_time.hours;
 rtc_evt-&gt;rtc.minutes = l_CoffeeAO.alarm.current_time.minutes;
 
 Alarm_dispatch((QFsm *)&amp;l_CoffeeAO.alarm, (QEvt *) rtc_evt);
+QF_INT_ENABLE();
 QActive_postFIFO((QActive *)&amp;l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+QF_INT_DISABLE();
 </action>
         <tran_glyph conn="58,118,1,-1,-7">
          <action box="-6,0,6,2"/>
@@ -400,7 +404,9 @@ lcd_print(&quot;^&quot;);</action>
         </tran_glyph>
        </tran>
        <tran trig="INT">
-        <action>QActive_postFIFO((QActive *)&amp;l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));</action>
+        <action>QF_INT_ENABLE();
+QActive_postFIFO((QActive *)&amp;l_CoffeeAO, Q_NEW(QEvent, GO_BACK_SIG));
+QF_INT_DISABLE();</action>
         <tran_glyph conn="76,118,1,-1,-8">
          <action box="-6,0,6,2"/>
         </tran_glyph>
@@ -475,7 +481,9 @@ l_CoffeeAO.alarm.real_current_time = ((RtcEvt*)e)-&gt;rtc;</action>
 </guard>
         <action brief="post_alarm">printf(&quot;ALARM!!!\n&quot;);
 /* asynchronously post the event to the container AO */
-QActive_postFIFO((QActive*)&amp;l_CoffeeAO, Q_NEW(QEvent, BREW_SIG));</action>
+QF_INT_ENABLE();
+QActive_postFIFO((QActive*)&amp;l_CoffeeAO, Q_NEW(QEvent, BREW_SIG));
+QF_INT_DISABLE();</action>
         <choice_glyph conn="47,29,5,-1,9">
          <action box="1,0,10,2"/>
         </choice_glyph>

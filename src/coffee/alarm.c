@@ -93,7 +93,9 @@ QState Alarm_alarm_on(Alarm * const me, QEvt const * const e) {
 ) {
                 printf("ALARM!!!\n");
                 /* asynchronously post the event to the container AO */
+                QF_INT_ENABLE();
                 QActive_postFIFO((QActive*)&l_CoffeeAO, Q_NEW(QEvent, BREW_SIG));
+                QF_INT_DISABLE();
                 status_ = Q_HANDLED();
             }
             else {
